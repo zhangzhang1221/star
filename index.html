@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>你最像《后会友期》里的哪位明星？</title>
+  <script src="https://resource-static.cdn.bcebos.com/common/tailwindcss/3.4.16.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        container: { center: true, padding: '1.25rem', screens: { '2xl': '1120px' } },
+        extend: {
+          colors: {
+            border: 'hsl(var(--border))',
+            input: 'hsl(var(--input))',
+            ring: 'hsl(var(--ring))',
+            background: 'hsl(var(--background))',
+            foreground: 'hsl(var(--foreground))',
+            primary: { DEFAULT: 'hsl(var(--primary))', foreground: 'hsl(var(--primary-foreground))' },
+            secondary: { DEFAULT: 'hsl(var(--secondary))', foreground: 'hsl(var(--secondary-foreground))' },
+            muted: { DEFAULT: 'hsl(var(--muted))', foreground: 'hsl(var(--muted-foreground))' },
+            accent: { DEFAULT: 'hsl(var(--accent))', foreground: 'hsl(var(--accent-foreground))' },
+            card: { DEFAULT: 'hsl(var(--card))', foreground: 'hsl(var(--card-foreground))' },
+            lifelong: { DEFAULT: 'hsl(var(--lifelong))', soft: 'hsl(var(--lifelong-soft))' },
+            drift: { DEFAULT: 'hsl(var(--drift))', soft: 'hsl(var(--drift-soft))' }
+          },
+          borderRadius: {
+            lg: 'var(--radius)',
+            md: 'calc(var(--radius) - 4px)',
+            sm: 'calc(var(--radius) - 8px)'
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"PingFang SC"', '"Microsoft YaHei"', '"Helvetica Neue"', 'Arial', 'sans-serif'],
+            display: ['"Songti SC"', '"STSong"', '"SimSun"', 'Georgia', 'serif']
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    /* ===== DESIGN-TOKENS:BEGIN ===== */
+    :root {
+      --radius: 1rem;
+      --background: 30 33% 97%;
+      --foreground: 20 22% 13%;
+      --card: 0 0% 100%;
+      --card-foreground: 20 22% 13%;
+      --primary: 14 62% 44%;
+      --primary-foreground: 30 40% 98%;
+      --secondary: 30 25% 93%;
+      --secondary-foreground: 20 22% 20%;
+      --muted: 30 22% 94%;
+      --muted-foreground: 25 12% 38%;
+      --accent: 200 28% 26%;
+      --accent-foreground: 30 40% 98%;
+      --border: 30 18% 86%;
+      --input: 30 18% 86%;
+      --ring: 14 62% 44%;
+      --lifelong: 158 48% 29%;
+      --lifelong-soft: 158 42% 94%;
+      --drift: 24 70% 38%;
+      --drift-soft: 28 62% 94%;
+    }
+    /* ===== DESIGN-TOKENS:END ===== */
+
+    /* ===== APP-CSS:BEGIN ===== */
+    html { scroll-behavior: smooth; }
+    body { -webkit-tap-highlight-color: transparent; }
+
+    /* 封面主视觉：暮色暖光 */
+    .hero-panel {
+      background-image:
+        radial-gradient(120% 90% at 88% 8%, hsl(var(--primary) / .55) 0%, hsl(var(--primary) / 0) 58%),
+        linear-gradient(150deg, hsl(var(--accent)) 0%, hsl(var(--accent) / .88) 55%, hsl(var(--primary) / .9) 100%);
+    }
+    .hero-grain {
+      background-image: radial-gradient(hsl(var(--primary-foreground) / .35) 1px, transparent 1px);
+      background-size: 22px 22px;
+      opacity: .18;
+    }
+
+    /* 入场动效 */
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(28px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes slideInLeft {
+      from { opacity: 0; transform: translateX(-28px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(.86); }
+      60% { opacity: 1; transform: scale(1.03); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    @keyframes ringPulse {
+      0% { box-shadow: 0 0 0 0 hsl(var(--primary) / .35); }
+      100% { box-shadow: 0 0 0 14px hsl(var(--primary) / 0); }
+    }
+
+    .anim-rise { animation: riseIn .55s cubic-bezier(.22,.8,.28,1) both; }
+    .anim-fade { animation: fadeIn .45s ease-out both; }
+    .anim-right { animation: slideInRight .4s cubic-bezier(.22,.8,.28,1) both; }
+    .anim-left { animation: slideInLeft .4s cubic-bezier(.22,.8,.28,1) both; }
+    .anim-pop { animation: popIn .5s cubic-bezier(.22,.8,.28,1) both; }
+    .delay-1 { animation-delay: .08s; }
+    .delay-2 { animation-delay: .16s; }
+    .delay-3 { animation-delay: .24s; }
+    .delay-4 { animation-delay: .32s; }
+    .delay-5 { animation-delay: .4s; }
+
+    /* 选项 */
+    .option {
+      position: relative;
+      overflow: hidden;
+      transition: transform .18s ease-out, border-color .18s ease-out, background-color .18s ease-out, box-shadow .18s ease-out;
+    }
+    .option:hover { transform: translateY(-2px); border-color: hsl(var(--primary)); }
+    .option:active { transform: translateY(0) scale(.995); }
+    .option[data-state="selected"] {
+      border-color: hsl(var(--primary));
+      background-color: hsl(var(--primary) / .08);
+      animation: ringPulse .45s ease-out;
+    }
+    .option[data-state="selected"] .opt-badge {
+      background-color: hsl(var(--primary));
+      color: hsl(var(--primary-foreground));
+      border-color: hsl(var(--primary));
+      transform: scale(1.05);
+    }
+    .option[data-state="selected"] .opt-text { font-weight: 600; }
+    .opt-badge { transition: all .18s ease-out; }
+
+    /* 进度条 */
+    .progress-fill {
+      transition: width .55s cubic-bezier(.22,.8,.28,1);
+      background-image: linear-gradient(90deg, hsl(var(--primary)) 0%, hsl(var(--primary) / .68) 100%);
+    }
+
+    /* 结果：星标与配对卡 */
+    .star-badge {
+      background-image: linear-gradient(145deg, hsl(var(--accent)) 0%, hsl(var(--primary)) 100%);
+    }
+    .pair-card { transition: transform .2s ease-out; }
+    .pair-card:hover { transform: translateY(-2px); }
+
+    /* 结果：得分条 */
+    .score-bar-fill {
+      transition: width .8s cubic-bezier(.22,.8,.28,1);
+      background-color: hsl(var(--primary) / .75);
+    }
+    .score-row.is-top .score-bar-fill { background-color: hsl(var(--primary)); }
+    .score-row.is-top .score-name { font-weight: 600; }
+
+    /* 结果逐条浮现 */
+    .reveal > * { animation: riseIn .5s cubic-bezier(.22,.8,.28,1) both; }
+    .reveal > *:nth-child(1) { animation-delay: .02s; }
+    .reveal > *:nth-child(2) { animation-delay: .08s; }
+    .reveal > *:nth-child(3) { animation-delay: .14s; }
+    .reveal > *:nth-child(4) { animation-delay: .2s; }
+    .reveal > *:nth-child(5) { animation-delay: .26s; }
+    .reveal > *:nth-child(6) { animation-delay: .32s; }
+
+    /* 提示条 */
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 2rem;
+      transform: translate(-50%, 12px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s ease-out, transform .25s ease-out;
+      z-index: 60;
+    }
+    .toast.is-show { opacity: 1; transform: translate(-50%, 0); }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+    }
+    /* ===== APP-CSS:END ===== */
+  </style>
+</head>
+<body class="bg-background text-foreground antialiased">
+
+  <main class="container min-h-screen py-8 md:py-12">
+
+    <!-- 封面 -->
+    <section id="intro" aria-label="测评封面">
+      <div class="anim-rise">
+        <p class="mb-3 text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">友情自测 · 明星匹配版</p>
+        <h1 class="font-display text-4xl leading-[1.15] tracking-tight md:text-5xl">
+          你最像《后会友期》里的
+          <span class="text-primary">哪位明星</span>？
+        </h1>
+        <p class="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground">
+          有些友情因为忙碌走散，有些遗憾因为没说出口而搁浅。当旧友重逢，你是主动张罗的人，还是安静陪伴的人？16 道题，测出你的友情底色，也测出你和谁最容易走散、和谁能处一辈子。
+        </p>
+      </div>
+
+      <div class="hero-panel relative mt-8 overflow-hidden rounded-lg p-6 text-primary-foreground shadow-sm md:p-10 anim-rise delay-1">
+        <div class="hero-grain pointer-events-none absolute inset-0"></div>
+        <div class="relative flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p class="text-sm text-primary-foreground/80">8 位嘉宾 · 8 种友情</p>
+            <p class="mt-2 font-display text-3xl leading-snug md:text-4xl">重逢那天，<br class="hidden md:block" />你还是那个你吗？</p>
+          </div>
+          <div class="shrink-0">
+            <button id="startBtn" type="button" class="btn-start w-full rounded-md bg-primary-foreground px-7 py-3.5 text-base font-semibold text-primary transition-transform duration-200 hover:-translate-y-0.5 active:translate-y-0 md:w-auto">
+              开始自测
+            </button>
+            <p class="mt-2 text-center text-xs text-primary-foreground/75">16 道题 · 约 3 分钟</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-10">
+        <div class="mb-4 flex items-baseline justify-between">
+          <h2 class="font-display text-xl">八种友情底色</h2>
+          <span class="text-xs text-muted-foreground">看看你会是哪一款</span>
+        </div>
+        <div id="starGrid" class="grid grid-cols-2 gap-3 md:grid-cols-4"></div>
+      </div>
+    </section>
+
+    <!-- 答题 -->
+    <section id="quiz" aria-label="答题" hidden class="mx-auto max-w-2xl">
+      <div class="mb-6">
+        <div class="mb-2 flex items-center justify-between text-sm">
+          <span id="qNum" class="font-medium tabular-nums">第 1 / 16 题</span>
+          <span id="qHint" class="text-xs text-muted-foreground">选择更接近你的那一项</span>
+        </div>
+        <div class="h-2 w-full overflow-hidden rounded-full bg-secondary" role="progressbar" aria-valuemin="0" aria-valuemax="16" aria-valuenow="0" id="progressBar">
+          <div id="progressFill" class="progress-fill h-full w-0 rounded-full"></div>
+        </div>
+      </div>
+
+      <div id="questionCard" class="rounded-lg border border-border bg-card p-6 shadow-sm md:p-8">
+        <h2 id="qStem" class="font-display text-2xl leading-snug md:text-[28px]"></h2>
+        <div id="options" class="mt-6 grid gap-3"></div>
+      </div>
+
+      <div class="mt-6 flex items-center justify-between">
+        <button id="backBtn" type="button" class="rounded-md px-4 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40">
+          ← 上一题
+        </button>
+        <span class="text-xs text-muted-foreground">键盘 1–4 可快速作答</span>
+      </div>
+    </section>
+
+    <!-- 结果 -->
+    <section id="result" aria-label="测评结果" hidden class="mx-auto max-w-2xl">
+
+      <p class="text-center text-xs font-medium uppercase tracking-[0.22em] text-muted-foreground">你的友情底色</p>
+
+      <div class="star-badge mt-4 rounded-lg p-6 text-center text-primary-foreground shadow-sm anim-pop md:p-8">
+        <p class="text-sm text-primary-foreground/80">你最像</p>
+        <p id="rStar" class="mt-1 font-display text-5xl leading-none md:text-6xl"></p>
+        <p id="rStyle" class="mt-3 text-lg text-primary-foreground/90"></p>
+        <div id="rKeywords" class="mt-4 flex flex-wrap justify-center gap-2"></div>
+      </div>
+
+      <div id="resultReveal" class="reveal mt-6 space-y-6">
+
+        <div class="rounded-lg border border-border bg-card p-6 shadow-sm">
+          <h2 class="font-display text-lg">结果解读</h2>
+          <p id="rDesc" class="mt-3 text-[15px] leading-relaxed text-secondary-foreground"></p>
+          <p id="rPersona" class="mt-3 border-l-2 border-border pl-3 text-[13px] leading-relaxed text-muted-foreground"></p>
+        </div>
+
+        <div class="rounded-lg border border-border bg-card p-6 shadow-sm">
+          <div class="flex items-baseline justify-between">
+            <h2 class="font-display text-lg">你的友情维度</h2>
+            <span class="text-xs text-muted-foreground">六维性格画像</span>
+          </div>
+          <div id="rRadar" class="mt-4"></div>
+          <div class="mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+            <span class="inline-flex items-center gap-1.5"><span class="inline-block h-2.5 w-2.5 rounded-full bg-primary"></span>你的画像</span>
+            <span class="inline-flex items-center gap-1.5"><span class="inline-block h-0 w-3 border-t-2 border-dashed border-accent"></span>你匹配的明星</span>
+          </div>
+          <div id="rDimChips" class="mt-4 flex flex-wrap gap-2"></div>
+        </div>
+
+        <figure class="rounded-lg bg-secondary p-6">
+          <figcaption class="text-xs uppercase tracking-[0.18em] text-muted-foreground">想对旧友说一句</figcaption>
+          <blockquote id="rMessage" class="mt-3 font-display text-xl leading-relaxed"></blockquote>
+        </figure>
+
+        <div class="grid gap-4 md:grid-cols-2">
+          <div class="pair-card rounded-lg border border-lifelong/30 bg-lifelong-soft p-5">
+            <p class="text-xs font-semibold uppercase tracking-[0.16em] text-lifelong">能处一辈子</p>
+            <p id="rLifelong" class="mt-2 font-display text-2xl text-lifelong"></p>
+            <p class="mt-2 text-[13px] leading-relaxed text-secondary-foreground">节奏相近、彼此接得住，越处越松弛。</p>
+          </div>
+          <div class="pair-card rounded-lg border border-drift/30 bg-drift-soft p-5">
+            <p class="text-xs font-semibold uppercase tracking-[0.16em] text-drift">最容易走散</p>
+            <p id="rDrift" class="mt-2 font-display text-2xl text-drift"></p>
+            <p class="mt-2 text-[13px] leading-relaxed text-secondary-foreground">不是不合，是相处方式错位，容易慢慢淡掉。</p>
+          </div>
+        </div>
+
+        <p id="rCompat" class="text-[13px] leading-relaxed text-muted-foreground"></p>
+
+        <div class="rounded-lg border border-border bg-card p-6 shadow-sm">
+          <h2 class="font-display text-lg">给你的友情建议</h2>
+          <ol id="rAdvice" class="mt-4 space-y-3"></ol>
+        </div>
+
+        <div class="rounded-lg border border-border bg-card p-6 shadow-sm">
+          <div class="flex items-baseline justify-between">
+            <h2 class="font-display text-lg">你的友情光谱</h2>
+            <span class="text-xs text-muted-foreground">每项满分 16</span>
+          </div>
+          <div id="rScores" class="mt-4 space-y-2.5"></div>
+        </div>
+
+        <div class="flex flex-col gap-3 pb-8 pt-2 md:flex-row">
+          <button id="copyBtn" type="button" class="flex-1 rounded-md bg-primary px-6 py-3.5 text-base font-semibold text-primary-foreground transition-transform duration-200 hover:-translate-y-0.5 active:translate-y-0">
+            复制我的结果
+          </button>
+          <button id="againBtn" type="button" class="flex-1 rounded-md border border-border bg-card px-6 py-3.5 text-base font-semibold transition-colors hover:bg-secondary">
+            重新测一次
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="toast" class="toast rounded-md bg-accent px-5 py-3 text-sm text-accent-foreground shadow-sm" role="status" aria-live="polite">已复制到剪贴板</div>
+
+  <!-- ===== APP-JS:BEGIN ===== -->
+  <script>
+    /* 数据 */
+    const STAR_ORDER = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+
+    const STARS = {
+      A: {
+        name: '张萌', style: '重逢引路人', subtitle: '主动破冰型', keywords: ['主动', '热情', '行动派'],
+        desc: '你是朋友圈里的「重启键」。当一段关系因为忙碌而疏远，你总是那个先开口的人。你不害怕打扰，因为能约到旧友就是最大的幸福。像张萌一样，你用行动把大家重新聚在一起。',
+        persona: '节目出处：张萌在《后会友期》里主动张罗、控场担当，带着马天宇重新走进这段友情，路人缘拉满。',
+        message: '谢谢你愿意回应我的每一次主动，有你在，重逢从不孤单。',
+        advice: ['你习惯主动，但别忘了也给朋友留点空间——主动是礼物，不是义务。', '偶尔把「组局」的担子交出去，你会发现朋友也能为你张罗。', '主动之前先问问对方是否方便，热情才不会变成负担。'],
+        lifelong: ['马天宇', '青稚'], drift: ['文吉儿', '厉娜'],
+        compat: '你主动又热闹，和同样愿意靠近的马天宇、有话直说的青稚最能长久；但和较真的文吉儿、随遇而安的厉娜，容易因为节奏不同慢慢走散。'
+      },
+      B: {
+        name: '马天宇', style: '深度陪伴者', subtitle: '走心倾听型', keywords: ['走心', '倾听', '安静温柔'],
+        desc: '你重视的是「质量」而非「数量」。你未必频繁联系，但每次相聚都恨不得把话说尽。像马天宇一样，你不善言辞却心思细腻，用行动默默照顾身边的每一个人。',
+        persona: '节目出处：马天宇话不多，却总在关键时刻温柔陪伴、充当调和剂，藏了半生的孤独，对朋友始终真心。',
+        message: '我们不必时时联系，但只要见面，就还是从前的我们。',
+        advice: ['你的温柔是稀缺品，但别总把自己放在最后。', '学会把「我也需要你」说出口，陪伴从来都是双向的。', '安静倾听之外，也试着表达自己的立场，别一味退让。'],
+        lifelong: ['张萌', '白小纯'], drift: ['厉娜', '文吉儿'],
+        compat: '你安静又稳，和主动的张萌、情绪外露的白小纯刚好互补；但和想躺平的厉娜、非要掰扯清楚的文吉儿，容易因沟通频率不同而渐行渐远。'
+      },
+      C: {
+        name: '许飞', style: '和解治愈师', subtitle: '直面遗憾型', keywords: ['坦诚', '和解', '直面遗憾'],
+        desc: '你敢于直面关系里的裂痕。曾经的误会、没说出口的话、留下的遗憾，在你这里不会被一直搁置。像许飞一样，你愿意先低头、先坦白，把「那件事」好好翻篇。',
+        persona: '节目出处：许飞与厉娜因误会决裂十余年，那句「我画地为牢，厉娜」戳中无数观众，他敢于直面旧账、坦诚内心。',
+        message: '当年没说出口的话，今天我想和你好好说开。',
+        advice: ['你敢直面问题是优点，但别让执念困住自己。', '有些遗憾，说开了是释怀；说不开，就学着与它和平共处。', '表达情绪时先说感受、少下结论，对方才更容易接住你。'],
+        lifelong: ['文吉儿', '马天宇'], drift: ['厉娜', '青稚'],
+        compat: '你重视把话说清，和同样较真的文吉儿、能包容你的马天宇最合拍；但和「不想要答案」的厉娜、太直太简单的青稚，容易因太纠结而错位。'
+      },
+      D: {
+        name: '白小纯', style: '快乐玩伴', subtitle: '嘴硬心软型', keywords: ['嘴硬心软', '情绪外露', '开心果'],
+        desc: '你是朋友圈的「开心果」。嘴上爱吐槽爱拆台，心里却把朋友放在第一位。像白小纯一样，你的关心从不大声说出来，但都藏在一个个细节里。',
+        persona: '节目出处：白小纯嘴上说「我恨他」，却把给青稚的礼物悄悄放在对方床边；被质疑就炸毛，被夸又藏不住笑。',
+        message: '有你这个朋友真好，咱们继续没心没肺地开心玩！',
+        advice: ['你的关心都藏在细节里，可对方未必读得懂——试着把「我在乎你」直接说出口。', '情绪来得快去得也快，别让一时的炸毛伤了真正重要的人。', '嘴硬是保护色，偶尔也承认一次「我需要你」。'],
+        lifelong: ['青稚', '马天宇'], drift: ['文吉儿', '厉娜'],
+        compat: '你嘴硬心软，和直球的青稚、稳重的马天宇最能长久；但和较真讲理的文吉儿、钝感随性的厉娜，容易因情绪得不到回应而走散。'
+      },
+      E: {
+        name: '厉娜', style: '松弛自由者', subtitle: '钝感随性型', keywords: ['松弛', '真实', '钝感'],
+        desc: '你是朋友圈里的「松弛感担当」。你不讨好、不内耗，想睡就睡、想笑就笑。像厉娜一样，你用真实和钝感把相处变得轻松自在——但心里其实比谁都重情。',
+        persona: '节目出处：厉娜主打「上车睡觉、下车吃饭」，钝感力满格、不配合煽情，真实坦荡又重情。',
+        message: '和你在一起，我终于不用演了。',
+        advice: ['你的松弛很珍贵，但别用「无所谓」挡住所有想靠近你的人。', '偶尔认真回应一次，你会发现有人真的很想懂你。', '钝感是天赋，但对重要的人，也可以多给一点确定感。'],
+        lifelong: ['青稚', '白小纯'], drift: ['许飞', '文吉儿'],
+        compat: '你松弛真实，和同样不内耗的青稚、嘴硬心软的白小纯最自在；但和执着要说法的许飞、非要掰扯的文吉儿，容易因「一个用力一个不用力」而走散。'
+      },
+      F: {
+        name: '王子璇', style: '温柔守护者', subtitle: '隐忍体面型', keywords: ['温柔', '隐忍', '体面'],
+        desc: '你是朋友圈里的「温柔守护者」。你情绪稳定、没有架子，习惯先替别人着想，甚至委屈自己成全对方。像王子璇一样，你的体面背后，藏着一句没说出口的「我也需要被照顾」。',
+        persona: '节目出处：王子璇嘴上说绝交，听到文吉儿高反却第一时间赶去接人——把「我没事」「都是我不好」挂在嘴边。',
+        message: '谢谢你一直替我着想，这次换我来照顾你。',
+        advice: ['你总先替别人找理由，却委屈了自己——真正的体面，是先照顾好自己。', '把「我没事」换成「我有点难受」，朋友才帮得到你。', '学会表达需求，而不是默默承担所有。'],
+        lifelong: ['张萌', '马天宇'], drift: ['文吉儿', '许飞'],
+        compat: '你温柔隐忍，和主动的张萌、稳重的马天宇最互补；但和强势较真的文吉儿、尖锐直接的许飞，容易因一味退让而憋出隔阂。'
+      },
+      G: {
+        name: '文吉儿', style: '深度表达者', subtitle: '知性较真型', keywords: ['知性', '较真', '有主见'],
+        desc: '你是朋友圈里的「深度表达者」。你重视把话说清楚，不喜欢含糊其辞，对友情有自己的标准和坚持。像文吉儿一样，你渴望一段能聊到灵魂、不留误会的关系。',
+        persona: '节目出处：作家文吉儿执着于把心结聊开，有主见、重逻辑，想在结婚前和断联旧友把话说清楚。',
+        message: '有些话我憋了很久，今天想和你聊透。',
+        advice: ['把话说清楚很重要，但也先听听对方的感受——友情不是讲道理。', '先共情、再讲逻辑，关系会更顺。', '你的坚持是认真，但别让它变成对别人的要求。'],
+        lifelong: ['许飞', '青稚'], drift: ['王子璇', '张萌'],
+        compat: '你重视沟通，和同样较真的许飞、有话直说的青稚最合拍；但和隐忍的王子璇、偏热闹的张萌，容易因「一个要深度一个随性」而走散。'
+      },
+      H: {
+        name: '青稚', style: '直球真诚者', subtitle: '实诚直率型', keywords: ['直球', '实诚', '不绕弯'],
+        desc: '你是朋友圈里的「实诚担当」。你不绕弯、不藏着掖着，有话直说、有感情直给。像青稚一样，你的真诚是稀缺品——朋友在你面前，永远不用猜。',
+        persona: '节目出处：电竞选手青稚说话慢吞吞却句句实在，「先救根儿」的本能排序，成了他「不演」人设的注脚。',
+        message: '咱俩这交情，不用多说，都懂。',
+        advice: ['你的直率很真诚，但有时一句「我懂」比「我觉得你应该」更暖。', '直球之外，也学学留白，给对方一点消化情绪的空间。', '真诚是武器，但别用它去戳最在意的人。'],
+        lifelong: ['白小纯', '厉娜'], drift: ['许飞', '文吉儿'],
+        compat: '你直球实诚，和嘴硬心软的白小纯、松弛的厉娜最对频；但和太纠结的许飞、爱讲逻辑的文吉儿，容易因「太直」而踩到彼此的敏感点。'
+      }
+    };
+
+    /* 六个友情维度（顺序即画像向量下标） */
+    const DIMENSIONS = [
+      { key: 'D1', label: '主动破冰', high: '主动破冰', low: '静待回应' },
+      { key: 'D2', label: '表达直率', high: '表达直率', low: '含蓄内敛' },
+      { key: 'D3', label: '情绪外露', high: '情绪外放', low: '情绪克制' },
+      { key: 'D4', label: '直面冲突', high: '直面冲突', low: '顺其自然' },
+      { key: 'D5', label: '关系深度', high: '深度沟通', low: '轻松随性' },
+      { key: 'D6', label: '利他体谅', high: '利他体谅', low: '先顾自己' }
+    ];
+
+    /* 每位明星的六维画像（0-100），与 DIMENSIONS 顺序对应 */
+    const PROFILES = {
+      A: [85, 55, 65, 55, 40, 72], /* 张萌 */
+      B: [35, 28, 22, 48, 66, 86], /* 马天宇 */
+      C: [55, 78, 60, 86, 80, 42], /* 许飞 */
+      D: [52, 50, 86, 50, 30, 56], /* 白小纯 */
+      E: [24, 44, 40, 24, 26, 50], /* 厉娜 */
+      F: [46, 24, 20, 40, 52, 88], /* 王子璇 */
+      G: [48, 82, 46, 80, 88, 22], /* 文吉儿 */
+      H: [66, 80, 46, 50, 50, 56]  /* 青稚 */
+    };
+
+    const QUESTIONS = [
+      { stem: '多年没联系的老友突然给你发来消息，你的第一反应是？', options: [
+        ['立刻回复，顺便约出来聚一聚！', 'A'],
+        ['先安静读完，心里暖暖的，再认真回一句', 'B'],
+        ['回想当年是不是有什么没聊开，想借机说清楚', 'C'],
+        ['嘴上回个「哦」，心里早就乐开花了', 'D']
+      ]},
+      { stem: '和朋友聚会时，你通常是什么角色？', options: [
+        ['想坐就坐、想吃就吃，最松弛自在的那个', 'E'],
+        ['照顾大家、默默递水夹菜的温柔担当', 'F'],
+        ['认真聊深度话题、把感受说透的那个人', 'G'],
+        ['有问必答、一点不藏着掖着的实诚担当', 'H']
+      ]},
+      { stem: '和好友闹过别扭至今没和解，你会？', options: [
+        ['不先开口，但会在 ta 需要时第一时间出现', 'B'],
+        ['想找个机会把心里的话坦诚说开', 'C'],
+        ['当面说「我早忘了」，其实一直记挂着', 'D'],
+        ['嘴上说不原谅，行动上还是忍不住照顾 ta', 'E']
+      ]},
+      { stem: '老友重逢，发现对方变化很大，你会？', options: [
+        ['先替 ta 找理由，怕 ta 一时不适应', 'F'],
+        ['想和 ta 把变化的原因好好聊清楚', 'G'],
+        ['直接说「你还是你，我认得」', 'H'],
+        ['热情拉着 ta 聊，想把这几年补齐', 'A']
+      ]},
+      { stem: '你更向往哪一种重逢场景？', options: [
+        ['把当年留有遗憾的人约出来，好好说开', 'C'],
+        ['不用刻意安排，在一起打打闹闹就开心', 'D'],
+        ['随缘碰见就挺好，不用太用力', 'E'],
+        ['安安静静陪 ta，把 ta 照顾好', 'F']
+      ]},
+      { stem: '朋友向你倾诉烦恼时，你更倾向于？', options: [
+        ['帮 ta 把问题的来龙去脉理清，说到点子上', 'G'],
+        ['直球给建议，「我觉得你应该这么做」', 'H'],
+        ['先约 ta 出来，见面聊更有感觉', 'A'],
+        ['认真听，不多话，但让 ta 觉得被接住', 'B']
+      ]},
+      { stem: '对于「友情也需要经营」这句话，你觉得？', options: [
+        ['嘴上说不经营，其实偷偷把 ta 的喜好都记着', 'D'],
+        ['顺其自然最好，别给友情加压力', 'E'],
+        ['经营就是多体谅对方，少让对方为难', 'F'],
+        ['经营就是把话说清楚，别留误会', 'G']
+      ]},
+      { stem: '一次久别重逢的饭局，你最容易记住的是？', options: [
+        ['谁说了句大实话，我记到现在', 'H'],
+        ['终于又聚齐了的热闹', 'A'],
+        ['某个安静的瞬间，觉得有你们真好', 'B'],
+        ['终于把当年的事说开了的释然', 'C']
+      ]},
+      { stem: '如果老友很久没回你消息，你会？', options: [
+        ['不催，ta 想回自然会回', 'E'],
+        ['担心是不是自己哪里做错了，想问清楚', 'F'],
+        ['想找个时机把话说开，别让误会拖下去', 'G'],
+        ['直接再发一条，「在吗，出来吃饭」', 'H']
+      ]},
+      { stem: '你心里「最好的友情」是？', options: [
+        ['随时能约、说聚就聚的默契', 'A'],
+        ['哪怕很久不见，见面还是亲切如初', 'B'],
+        ['吵过闹过，最后还能坦诚相待', 'C'],
+        ['在一起永远轻松，可以随便互怼不用装', 'D']
+      ]},
+      { stem: '面对一段渐渐淡了的友谊，你会？', options: [
+        ['先反思是不是自己哪里没做好', 'F'],
+        ['想弄清楚到底哪里出了问题', 'G'],
+        ['直接问 ta「咱俩是不是怎么了」', 'H'],
+        ['主动发条消息，把关系重新拉起来', 'A']
+      ]},
+      { stem: '老友聚会聊起当年的糗事，你通常？', options: [
+        ['安静地笑，偶尔补一句走心的话', 'B'],
+        ['借机把当年没解开的疙瘩聊开', 'C'],
+        ['继续拆台，把全场逗得前仰后合', 'D'],
+        ['哈哈一笑，继续吃我的饭', 'E']
+      ]},
+      { stem: '如果可以和一位旧友「重新认识」一次，你最想？', options: [
+        ['坐下来把彼此这些年的想法聊透', 'G'],
+        ['像刚认识那样，有话直说', 'H'],
+        ['第一时间约 ta，重新做回亲密好友', 'A'],
+        ['像老朋友一样安静待着，不用多说什么', 'B']
+      ]},
+      { stem: '你觉得友情里最难得的是？', options: [
+        ['能跨越遗憾，重新把话说开', 'C'],
+        ['能放心做最真实的自己，不用装', 'D'],
+        ['在一起不用演，想怎样就怎样', 'E'],
+        ['有人愿意一直体谅你、包容你', 'F']
+      ]},
+      { stem: '这次「重逢」，你最想对旧友说一句？', options: [
+        ['咱俩这交情，不用多说，都懂', 'H'],
+        ['好久不见，咱们出来聚聚吧！', 'A'],
+        ['谢谢你一直在，我很珍惜你', 'B'],
+        ['当年的事，我想和你好好说开', 'C']
+      ]},
+      { stem: '朋友犯了错但一直没道歉，你会？', options: [
+        ['嘴上说「算了」，心里还是有点堵', 'D'],
+        ['无所谓啦，别影响我吃饭睡觉', 'E'],
+        ['先替 ta 找理由，自己憋着不说', 'F'],
+        ['认真把这件事掰开揉碎说清楚', 'G']
+      ]}
+    ];
+
+    /* 元素 */
+    const introSec = document.getElementById('intro');
+    const quizSec = document.getElementById('quiz');
+    const resultSec = document.getElementById('result');
+    const starGrid = document.getElementById('starGrid');
+    const qNum = document.getElementById('qNum');
+    const qStem = document.getElementById('qStem');
+    const optionsEl = document.getElementById('options');
+    const progressBar = document.getElementById('progressBar');
+    const progressFill = document.getElementById('progressFill');
+    const backBtn = document.getElementById('backBtn');
+    const questionCard = document.getElementById('questionCard');
+    const toast = document.getElementById('toast');
+
+    /* 状态 */
+    const TOTAL = QUESTIONS.length;
+    let current = 0;
+    let answers = new Array(TOTAL).fill(null);
+    let locked = false;
+    let selectedCode = null;
+
+    /* 封面八宫格 */
+    function renderStarGrid() {
+      starGrid.innerHTML = STAR_ORDER.map(function (k) {
+        const s = STARS[k];
+        return '<div class="rounded-md border border-border bg-card px-4 py-3">' +
+          '<p class="font-display text-lg">' + s.name + '</p>' +
+          '<p class="mt-0.5 text-xs text-primary">' + s.style + '</p>' +
+          '<p class="mt-1 text-xs text-muted-foreground">' + s.subtitle + '</p>' +
+          '</div>';
+      }).join('');
+    }
+
+    /* 屏幕切换 */
+    function showScreen(target) {
+      [introSec, quizSec, resultSec].forEach(function (sec) { sec.hidden = (sec !== target); });
+      window.scrollTo({ top: 0, behavior: 'auto' });
+      target.classList.remove('anim-fade');
+      void target.offsetWidth;
+      target.classList.add('anim-fade');
+    }
+
+    /* 渲染题目 */
+    function renderQuestion(direction) {
+      const q = QUESTIONS[current];
+      qNum.textContent = '第 ' + (current + 1) + ' / ' + TOTAL + ' 题';
+      qStem.textContent = q.stem;
+      backBtn.disabled = current === 0;
+      selectedCode = answers[current];
+
+      optionsEl.innerHTML = q.options.map(function (opt, i) {
+        const code = opt[1];
+        const isSelected = selectedCode === code;
+        return '<button type="button" class="option flex w-full items-center gap-4 rounded-md border border-border bg-card px-4 py-4 text-left" ' +
+          'data-code="' + code + '" data-state="' + (isSelected ? 'selected' : 'idle') + '" aria-pressed="' + (isSelected ? 'true' : 'false') + '">' +
+          '<span class="opt-badge flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border text-sm font-semibold text-muted-foreground">' + 'ABCD'[i] + '</span>' +
+          '<span class="opt-text text-[15px] leading-relaxed text-card-foreground">' + opt[0] + '</span>' +
+          '</button>';
+      }).join('');
+
+      questionCard.classList.remove('anim-right', 'anim-left');
+      void questionCard.offsetWidth;
+      questionCard.classList.add(direction === 'back' ? 'anim-left' : 'anim-right');
+
+      updateProgress();
+    }
+
+    /* 进度 */
+    function updateProgress() {
+      const answered = answers.filter(function (a) { return a !== null; }).length;
+      const ratio = answered / TOTAL;
+      progressFill.style.width = (ratio * 100) + '%';
+      progressBar.setAttribute('aria-valuenow', String(answered));
+    }
+
+    /* 选择选项 */
+    function pickOption(code) {
+      if (locked) return;
+      locked = true;
+      answers[current] = code;
+
+      const buttons = optionsEl.querySelectorAll('.option');
+      buttons.forEach(function (btn) {
+        const on = btn.getAttribute('data-code') === code;
+        btn.setAttribute('data-state', on ? 'selected' : 'idle');
+        btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+      updateProgress();
+
+      const isLast = current === TOTAL - 1;
+      setTimeout(function () {
+        locked = false;
+        if (isLast) {
+          renderResult();
+        } else {
+          current += 1;
+          renderQuestion('next');
+        }
+      }, 320);
+    }
+
+    /* 上一题 */
+    function goBack() {
+      if (current === 0 || locked) return;
+      current -= 1;
+      renderQuestion('back');
+    }
+
+    /* 计分 + 维度画像 + 余弦相似度匹配 */
+    function computeResult() {
+      const scores = {};
+      STAR_ORDER.forEach(function (k) { scores[k] = 0; });
+      answers.forEach(function (code) { if (code) scores[code] += 2; });
+
+      /* 维度画像：所选选项对应明星画像的均值（0-100） */
+      const dimSum = DIMENSIONS.map(function () { return 0; });
+      let counted = 0;
+      answers.forEach(function (code) {
+        if (!code) return;
+        const prof = PROFILES[code];
+        prof.forEach(function (v, i) { dimSum[i] += v; });
+        counted++;
+      });
+      const userProfile = counted
+        ? dimSum.map(function (v) { return v / counted; })
+        : DIMENSIONS.map(function () { return 50; });
+
+      /* 余弦相似度：主排序按画像接近度，次排序按票数，再次按 STAR_ORDER */
+      function cosine(a, b) {
+        let dot = 0, na = 0, nb = 0;
+        for (let i = 0; i < a.length; i++) { dot += a[i] * b[i]; na += a[i] * a[i]; nb += b[i] * b[i]; }
+        return dot / (Math.sqrt(na) * Math.sqrt(nb) || 1);
+      }
+      let best = STAR_ORDER[0];
+      let bestKey = -Infinity;
+      STAR_ORDER.forEach(function (k) {
+        const metric = cosine(userProfile, PROFILES[k]) * 1000 + scores[k];
+        if (metric > bestKey) { bestKey = metric; best = k; }
+      });
+      return { best: best, scores: scores, userProfile: userProfile };
+    }
+
+    /* 六维雷达图（内联 SVG） */
+    function renderRadar(userProfile, bestKey) {
+      const el = document.getElementById('rRadar');
+      if (!el) return;
+      const cx = 150, cy = 150, R = 90, n = DIMENSIONS.length;
+      const target = PROFILES[bestKey];
+      function pt(i, val) {
+        const ang = -Math.PI / 2 + i * 2 * Math.PI / n;
+        const r = R * val / 100;
+        return [cx + r * Math.cos(ang), cy + r * Math.sin(ang)];
+      }
+      function poly(vals) {
+        return vals.map(function (v, i) { return pt(i, v).map(function (x) { return x.toFixed(1); }).join(','); }).join(' ');
+      }
+      let grid = '';
+      [25, 50, 75, 100].forEach(function (lv) {
+        grid += '<polygon points="' + poly(DIMENSIONS.map(function () { return lv; })) + '" fill="none" stroke="hsl(var(--border))" stroke-width="1"/>';
+      });
+      let axes = '';
+      DIMENSIONS.forEach(function (d, i) {
+        const p = pt(i, 100);
+        axes += '<line x1="' + cx + '" y1="' + cy + '" x2="' + p[0].toFixed(1) + '" y2="' + p[1].toFixed(1) + '" stroke="hsl(var(--border))" stroke-width="1"/>';
+        const lp = pt(i, 116);
+        const anchor = Math.abs(lp[0] - cx) < 2 ? 'middle' : (lp[0] > cx ? 'start' : 'end');
+        axes += '<text x="' + lp[0].toFixed(1) + '" y="' + (lp[1] + 4).toFixed(1) + '" text-anchor="' + anchor + '" font-size="11" fill="hsl(var(--muted-foreground))">' + d.label + '</text>';
+      });
+      const targetPoly = '<polygon points="' + poly(target) + '" fill="none" stroke="hsl(var(--accent))" stroke-width="1.5" stroke-dasharray="4 3"/>';
+      const userPoly = '<polygon points="' + poly(userProfile) + '" fill="hsl(var(--primary) / .28)" stroke="hsl(var(--primary))" stroke-width="2"/>';
+      let dots = '';
+      userProfile.forEach(function (v, i) {
+        const p = pt(i, v);
+        dots += '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="2.6" fill="hsl(var(--primary))"/>';
+      });
+      el.innerHTML = '<svg viewBox="0 0 300 300" width="100%" role="img" aria-label="你的六维友情画像">' + grid + axes + targetPoly + userPoly + dots + '</svg>';
+    }
+
+    /* 突出维度标签 */
+    function renderDimChips(userProfile) {
+      const el = document.getElementById('rDimChips');
+      if (!el) return;
+      const top = userProfile.map(function (v, i) { return [v, i]; })
+        .sort(function (a, b) { return b[0] - a[0]; }).slice(0, 2).map(function (x) { return x[1]; });
+      el.innerHTML = top.map(function (i) {
+        return '<span class="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">' +
+          DIMENSIONS[i].high + ' · ' + Math.round(userProfile[i]) + '</span>';
+      }).join('');
+    }
+
+    /* 渲染结果 */
+    function renderResult() {
+      const res = computeResult();
+      const s = STARS[res.best];
+
+      document.getElementById('rStar').textContent = s.name;
+      document.getElementById('rStyle').textContent = s.style + ' · ' + s.subtitle;
+      document.getElementById('rDesc').textContent = s.desc;
+      document.getElementById('rPersona').textContent = s.persona;
+      document.getElementById('rMessage').textContent = '「' + s.message + '」';
+
+      document.getElementById('rKeywords').innerHTML = s.keywords.map(function (w) {
+        return '<span class="rounded-full bg-primary-foreground/15 px-3 py-1 text-xs text-primary-foreground">' + w + '</span>';
+      }).join('');
+
+      document.getElementById('rLifelong').textContent = s.lifelong.join(' · ');
+      document.getElementById('rDrift').textContent = s.drift.join(' · ');
+      document.getElementById('rCompat').textContent = s.compat;
+
+      document.getElementById('rAdvice').innerHTML = s.advice.map(function (a, i) {
+        return '<li class="flex gap-3 rounded-md bg-secondary px-4 py-3">' +
+          '<span class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">' + (i + 1) + '</span>' +
+          '<span class="text-[14px] leading-relaxed text-secondary-foreground">' + a + '</span>' +
+          '</li>';
+      }).join('');
+
+      const maxScore = Math.max.apply(null, STAR_ORDER.map(function (k) { return res.scores[k]; })) || 1;
+      document.getElementById('rScores').innerHTML = STAR_ORDER.map(function (k) {
+        const v = res.scores[k];
+        const pct = Math.round((v / maxScore) * 100);
+        return '<div class="score-row flex items-center gap-3 ' + (k === res.best ? 'is-top' : '') + '">' +
+          '<span class="score-name w-20 shrink-0 text-[13px] tabular-nums">' + STARS[k].name + '</span>' +
+          '<span class="h-2 flex-1 overflow-hidden rounded-full bg-secondary">' +
+          '<span class="score-bar-fill block h-full rounded-full" data-pct="' + pct + '" style="width:0%"></span>' +
+          '</span>' +
+          '<span class="w-8 shrink-0 text-right text-xs tabular-nums text-muted-foreground">' + v + '</span>' +
+          '</div>';
+      }).join('');
+
+      renderRadar(res.userProfile, res.best);
+      renderDimChips(res.userProfile);
+
+      showScreen(resultSec);
+
+      requestAnimationFrame(function () {
+        setTimeout(function () {
+          document.querySelectorAll('.score-bar-fill').forEach(function (el) {
+            el.style.width = el.getAttribute('data-pct') + '%';
+          });
+        }, 120);
+      });
+
+      resultSec.classList.remove('anim-fade');
+      void resultSec.offsetWidth;
+      resultSec.classList.add('anim-fade');
+
+      const revealEl = document.getElementById('resultReveal');
+      revealEl.classList.remove('reveal');
+      void revealEl.offsetWidth;
+      revealEl.classList.add('reveal');
+    }
+
+    /* 重新开始 */
+    function restart() {
+      current = 0;
+      answers = new Array(TOTAL).fill(null);
+      locked = false;
+      showScreen(quizSec);
+      renderQuestion('next');
+    }
+
+    /* 复制结果 */
+    function copyResult() {
+      const res = computeResult();
+      const s = STARS[res.best];
+      const topDim = res.userProfile.map(function (v, i) { return [v, i]; })
+        .sort(function (a, b) { return b[0] - a[0]; })[0][1];
+      const text = '我最像《后会友期》里的「' + s.name + '」——' + s.style + '。\n' +
+        s.desc + '\n' +
+        '我的突出维度：' + DIMENSIONS[topDim].high + '。\n' +
+        '能处一辈子：' + s.lifelong.join('、') + '；最容易走散：' + s.drift.join('、') + '。\n' +
+        '来测测你最像哪位嘉宾？';
+      const done = function () {
+        toast.classList.add('is-show');
+        setTimeout(function () { toast.classList.remove('is-show'); }, 1800);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () { fallbackCopy(text, done); });
+      } else {
+        fallbackCopy(text, done);
+      }
+    }
+
+    function fallbackCopy(text, done) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); done(); } catch (e) { done(); }
+      document.body.removeChild(ta);
+    }
+
+    /* 事件绑定 */
+    document.getElementById('startBtn').addEventListener('click', function () {
+      showScreen(quizSec);
+      renderQuestion('next');
+    });
+
+    optionsEl.addEventListener('click', function (e) {
+      const btn = e.target.closest('.option');
+      if (!btn) return;
+      pickOption(btn.getAttribute('data-code'));
+    });
+
+    backBtn.addEventListener('click', goBack);
+    document.getElementById('againBtn').addEventListener('click', restart);
+    document.getElementById('copyBtn').addEventListener('click', copyResult);
+
+    document.addEventListener('keydown', function (e) {
+      if (quizSec.hidden) return;
+      const map = { '1': 0, '2': 1, '3': 2, '4': 3 };
+      if (map[e.key] !== undefined) {
+        const btn = optionsEl.querySelectorAll('.option')[map[e.key]];
+        if (btn) pickOption(btn.getAttribute('data-code'));
+      } else if (e.key === 'ArrowLeft') {
+        goBack();
+      }
+    });
+
+    /* 初始化 */
+    renderStarGrid();
+    renderQuestion('next');
+  </script>
+  <!-- ===== APP-JS:END ===== -->
+</body>
+</html>
